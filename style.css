@@ -1,0 +1,27 @@
+h1 {
+  color: red;
+}
+
+h3 {
+  margin: 0;
+  padding: 7px 0 0 0;
+}
+
+label {
+  display: block;
+}
+
+.yaba {
+  color: blue;
+  display: inline;
+  padding-right: 5px;
+}
+
+.audf {
+  padding-top: 7px;
+}
+
+button {
+  display: block;
+  margin-top: 7px;
+}
