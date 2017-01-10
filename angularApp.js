@@ -57,19 +57,19 @@ app.controller('pokeyCtrl', function($scope) {
        $scope.audctl.push((byte >> i & 1) ? true : false);
     }
     let data_bytes = convertByte(byte);
-    console.log("sending 0xC8, " + data_bytes[0].toString(16).toUpperCase() + ", " + data_bytes[1].toString(16).toUpperCase());
+    console.log("sending 0xC8, 0x" + data_bytes[0].toString(16).toUpperCase() + ", 0x" + data_bytes[1].toString(16).toUpperCase());
     //outputs[0].send(0xC8, data_bytes[0], data_bytes[1]);
   }
 
 
-  function sendRegister(reg) {
+  function sendRegister(reg, addr) {
     let data_bytes = [];
     if (typeof reg === 'object') {
       data_bytes = convertByte(byteFromArray(reg));
     } else {
       data_bytes = convertByte(reg);
     }
-    console.log("sending 0xC0, " + data_bytes[0].toString(16).toUpperCase() + ", " + data_bytes[1].toString(16).toUpperCase());
+    console.log("sending 0x" + (addr + 192).toString(16).toUpperCase() + ", 0x" + data_bytes[0].toString(16).toUpperCase() + ", 0x" + data_bytes[1].toString(16).toUpperCase());
     //outputs[0].send(0xC0, data_bytes[0], data_bytes[1]);
   }
 
