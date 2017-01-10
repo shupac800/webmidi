@@ -49,20 +49,14 @@ app.controller('pokeyCtrl', function($scope) {
 
 
   function sendOnoff(onoff) {
-    let audctl = $scope.audctl;
-    let byte = byteFromArray(audctl);
+    let byte = byteFromArray($scope.audc1);
     byte = onoff === 'on' ? byte | 0x07 : byte & 0xF0;
-    $scope.audctl = arrayFromByte(byte);  // reload $scope.audctl array to reflect new volume
-    let data_bytes = splitByte(byte);
-    // console.log("sending 0xB8, 0x" + data_bytes[0].toString(16).toUpperCase() + ", 0x" + data_bytes[1].toString(16).toUpperCase());
-    // outputs[0].send(0xB8, data_bytes[0], data_bytes[1]);
-    // for testing, use 0xB5
-    console.log("sending 0xB5, 0x" + data_bytes[0].toString(16).toUpperCase() + ", 0x" + data_bytes[1].toString(16).toUpperCase());
-    outputs[0].send([0xB5, data_bytes[0], data_bytes[1]]);
+    $scope.audc1 = arrayFromByte(byte);  // reload $scope.audc1 array to reflect new volume
+    sendRegister("audc1", byte)
   }
 
 
-  function sendRegister(reg) {  // reg can be a byte or a T/F array
+  function sendRegister(name, byte) {  // byte can be a byte or a T/F array
     let addr = {"audc1" : 0,
                 "audf1" : 1,
                 "audc2" : 2,
@@ -74,13 +68,13 @@ app.controller('pokeyCtrl', function($scope) {
                 "audctl": 8,
                 "skctls": 15 };
     let data_bytes = [];
-    if (typeof reg === 'object') {
-      data_bytes = splitByte(byteFromArray(reg));
-    } else {
-      data_bytes = splitByte(reg);
+    if (typeof byte === 'object') {  // "byte" is T/F array?
+      data_bytes = splitByte(byteFromArray(byte));
+    } else {                         // "byte" is a byte
+      data_bytes = splitByte(byte);
     }
-    console.log("sending 0x" + (addr[reg] + 0xB0).toString(16).toUpperCase() + ", 0x" + data_bytes[0].toString(16).toUpperCase() + ", 0x" + data_bytes[1].toString(16).toUpperCase());
-    outputs[0].send([addr[reg] + 0xB0, data_bytes[0], data_bytes[1]]);
+    console.log("sending 0x" + (addr[name] + 0xB0).toString(16).toUpperCase() + ", 0x" + data_bytes[0].toString(16).toUpperCase() + ", 0x" + data_bytes[1].toString(16).toUpperCase());
+    outputs[0].send([addr[name] + 0xB0, data_bytes[0], data_bytes[1]]);
   }
 
 
