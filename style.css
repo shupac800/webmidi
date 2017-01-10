@@ -17,8 +17,9 @@ label {
   padding-right: 5px;
 }
 
-.audf {
-  padding-top: 7px;
+.audf input {
+  margin-top: 7px;
+  margin-right: 7px;
 }
 
 button {

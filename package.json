@@ -1,7 +1,6 @@
 {
   "name": "webmidi",
   "version": "0.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,6 +8,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "angular": "^1.6.1",
     "web-midi": "^2.0.1"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shupac800/webmidi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shupac800/webmidi/issues"
+  },
+  "homepage": "https://github.com/shupac800/webmidi"
 }
