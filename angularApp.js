@@ -3,15 +3,17 @@ app.controller('pokeyCtrl', function($scope) {
   console.log('controller running');
   $scope.sendOnoff = sendOnoff;
   $scope.sendRegister = sendRegister;
-  $scope.audc1 = [false, false, false, false, false, false, false, false];
-  $scope.audc2 = [false, false, false, false, false, false, false, false];
-  $scope.audc3 = [false, false, false, false, false, false, false, false];
-  $scope.audc4 = [false, false, false, false, false, false, false, false];
-  $scope.audctl = [false, false, false, false, false, false, false, false];
+  $scope.audc1 = new Array(8).fill(false);
+  $scope.audc2 = new Array(8).fill(false);
+  $scope.audc3 = new Array(8).fill(false);
+  $scope.audc4 = new Array(8).fill(false);
+  $scope.audctl = new Array(8).fill(false);
   $scope.audf1 = 0;
   $scope.audf2 = 0;
   $scope.audf3 = 0;
   $scope.audf4 = 0;
+  var outputs = [];
+  var inputs;
 
   // Check if the Web MIDI API is supported by the browser
   if (navigator.requestMIDIAccess) {
@@ -26,8 +28,6 @@ app.controller('pokeyCtrl', function($scope) {
   function onSuccess(interface) {
     console.log("Detected MIDI device:",interface);
 
-    let outputs = [];
-
     // Grab an array of all available devices
     var iter = interface.outputs.values();
     for (var i = iter.next(); i && !i.done; i = iter.next()) {
@@ -35,7 +35,7 @@ app.controller('pokeyCtrl', function($scope) {
     }
     console.log('outputs', outputs);
    
-    var inputs = interface.inputs;
+    inputs = interface.inputs;
     console.log("Found " + inputs.size + " MIDI input(s)");
 
     //connect to first device found
@@ -52,25 +52,44 @@ app.controller('pokeyCtrl', function($scope) {
     let audctl = $scope.audctl;
     let byte = byteFromArray(audctl);
     byte = onoff === 'on' ? byte | 0x07 : byte & 0xF0;
-    $scope.audctl = [];
-    for(let i = 0; i < 8; i++) {
-       $scope.audctl.push((byte >> i & 1) ? true : false);
-    }
-    let data_bytes = convertByte(byte);
-    console.log("sending 0xC8, 0x" + data_bytes[0].toString(16).toUpperCase() + ", 0x" + data_bytes[1].toString(16).toUpperCase());
-    //outputs[0].send(0xC8, data_bytes[0], data_bytes[1]);
+    $scope.audctl = arrayFromByte(byte);  // reload $scope.audctl array to reflect new volume
+    let data_bytes = splitByte(byte);
+    // console.log("sending 0xB8, 0x" + data_bytes[0].toString(16).toUpperCase() + ", 0x" + data_bytes[1].toString(16).toUpperCase());
+    // outputs[0].send(0xB8, data_bytes[0], data_bytes[1]);
+    // for testing, use 0xB5
+    console.log("sending 0xB5, 0x" + data_bytes[0].toString(16).toUpperCase() + ", 0x" + data_bytes[1].toString(16).toUpperCase());
+    outputs[0].send([0xB5, data_bytes[0], data_bytes[1]]);
   }
 
 
-  function sendRegister(reg, addr) {
+  function sendRegister(reg) {  // reg can be a byte or a T/F array
+    let addr = {"audc1" : 0,
+                "audf1" : 1,
+                "audc2" : 2,
+                "audf2" : 3,
+                "audc3" : 4,
+                "audf3" : 5,
+                "audc4" : 6,
+                "audf4" : 7,
+                "audctl": 8,
+                "skctls": 15 };
     let data_bytes = [];
     if (typeof reg === 'object') {
-      data_bytes = convertByte(byteFromArray(reg));
+      data_bytes = splitByte(byteFromArray(reg));
     } else {
-      data_bytes = convertByte(reg);
+      data_bytes = splitByte(reg);
     }
-    console.log("sending 0x" + (addr + 192).toString(16).toUpperCase() + ", 0x" + data_bytes[0].toString(16).toUpperCase() + ", 0x" + data_bytes[1].toString(16).toUpperCase());
-    //outputs[0].send(0xC0, data_bytes[0], data_bytes[1]);
+    console.log("sending 0x" + (addr[reg] + 0xB0).toString(16).toUpperCase() + ", 0x" + data_bytes[0].toString(16).toUpperCase() + ", 0x" + data_bytes[1].toString(16).toUpperCase());
+    outputs[0].send([addr[reg] + 0xB0, data_bytes[0], data_bytes[1]]);
+  }
+
+
+  function arrayFromByte(byte) {
+    let arr = [];
+    for(let i = 0; i < 8; i++) {
+       arr.push((byte >> i & 1) ? true : false);
+    }
+    return arr;
   }
 
 
@@ -85,7 +104,7 @@ app.controller('pokeyCtrl', function($scope) {
   }
 
 
-  function convertByte(byte) {
+  function splitByte(byte) {
     // have to split one 8-bit byte into two 7-bit bytes
     // because MIDI data values can only be 0-127
     let byte1 = byte & 0x7F;
