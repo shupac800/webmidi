@@ -52,19 +52,19 @@ app.controller('pokeyCtrl', function($scope) {
     let byte = byteFromArray($scope.audc1);
     byte = onoff === 'on' ? byte | 0x07 : byte & 0xF0;
     $scope.audc1 = arrayFromByte(byte);  // reload $scope.audc1 array to reflect new volume
-    sendRegister("audc1", byte)
+    sendRegister("audc1", byte);
   }
 
 
   function sendRegister(name, byte) {  // byte can be a byte or a T/F array
-    let addr = {"audc1" : 0,
-                "audf1" : 1,
-                "audc2" : 2,
-                "audf2" : 3,
-                "audc3" : 4,
-                "audf3" : 5,
-                "audc4" : 6,
-                "audf4" : 7,
+    let addr = {"audf1" : 0,
+                "audc1" : 1,
+                "audf2" : 2,
+                "audc2" : 3,
+                "audf3" : 4,
+                "audc3" : 5,
+                "audf4" : 6,
+                "audc4" : 7,
                 "audctl": 8,
                 "skctls": 15 };
     let data_bytes = [];
@@ -103,7 +103,7 @@ app.controller('pokeyCtrl', function($scope) {
     // because MIDI data values can only be 0-127
     let byte1 = byte & 0x7F;
     let byte2 = byte >> 7;
-    return [byte1, byte2]
+    return [byte1, byte2]; // little-endian
   }
 
 
