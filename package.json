@@ -9,6 +9,8 @@
   "license": "ISC",
   "dependencies": {
     "angular": "^1.6.1",
+    "ng-slider": "^2.2.6",
+    "rangeslider.js": "^2.3.0",
     "web-midi": "^2.0.1"
   },
   "devDependencies": {},

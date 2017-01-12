@@ -1,8 +1,12 @@
 var app = angular.module('pokeyCtrl', []);
-app.controller('pokeyCtrl', function($scope) {
+app.controller('pokeyCtrl', function($scope, $compile) {
   console.log('controller running');
   $scope.sendOnoff = sendOnoff;
   $scope.sendRegister = sendRegister;
+  $scope.poly5flip = poly5flip;
+  $scope.poly17flip = poly17flip;
+  $scope.poly4flip = poly4flip;
+  $scope.audc5flip = audc5flip;
   $scope.audc1 = new Array(8).fill(false);
   $scope.audc2 = new Array(8).fill(false);
   $scope.audc3 = new Array(8).fill(false);
@@ -12,6 +16,10 @@ app.controller('pokeyCtrl', function($scope) {
   $scope.audf2 = 0;
   $scope.audf3 = 0;
   $scope.audf4 = 0;
+  $scope.poly5 = true;
+  $scope.poly17 = true;
+  $scope.poly4 = false;
+  $scope.poly17_4 = true;
   var outputs = [];
   var inputs;
 
@@ -55,6 +63,23 @@ app.controller('pokeyCtrl', function($scope) {
     sendRegister("audc1", byte);
   }
 
+  function poly5flip() {
+    $scope.audc1[7] = !$scope.poly5;
+  }
+
+  function poly17flip() {
+    $scope.poly4 = !$scope.poly17;
+    $scope.audc1[6] = $scope.poly4;
+  }
+
+  function poly4flip() {
+    $scope.poly17 = !$scope.poly4;
+    $scope.audc1[6] = $scope.poly4;
+  }
+
+  function audc5flip() {
+    $scope.audc1[5] = !$scope.poly17_4;
+  }
 
   function sendRegister(name, byte) {  // byte can be a byte or a T/F array
     let addr = {"audf1" : 0,

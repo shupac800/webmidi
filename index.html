@@ -2,7 +2,8 @@
 <html>
 <head>
   <title>POKEY Controller</title>
-  <link href="style.css" rel="stylesheet" type="text/css">
+  <link href="css/style.css" rel="stylesheet" type="text/css">
+  <link href="css/ng-slider.min.css" rel="stylesheet" />
 </head>
 <body>
   <div ng-app='pokeyCtrl' ng-controller='pokeyCtrl'>
@@ -18,6 +19,26 @@
       </label>
     </div>
     <h3>AUDC1</h3>
+    <label class='audcDesc'>
+      <input type='checkbox' ng-model='audc1[4]' ng-checked='audc1[4]' ng-change='sendRegister("audc1", audc1)' name='audc1[]'>
+      force output to volume-only (AUDC bit 4)
+    </label>
+    <label class='audcDesc'>
+      <input type='checkbox' ng-model='poly17_4' ng-checked='poly17_4' ng-change='audc5flip(); sendRegister("audc1", audc1)' name='audc1[]'>
+      apply 17|4 poly (AUDC bit 5)
+    </label>
+    <label class='audcDesc'>
+      <input type='checkbox' ng-model='poly17' ng-checked='poly17' ng-change='poly17flip(); sendRegister("audc1", audc1)' name='audc1[]'>
+      17-bit poly (AUDC bit 6)
+    </label>
+    <label class='audcDesc'>
+      <input type='checkbox' ng-model='poly4' ng-checked='poly4' ng-change='poly4flip(); sendRegister("audc1", audc1)' name='audc1[]'>
+      4-bit poly (AUDC bit 6)
+    </label>
+    <label class='audcDesc'>
+      <input type='checkbox' ng-model='poly5' ng-checked='poly5' ng-change='poly5flip(); sendRegister("audc1", audc1)' name='audc1[]'>
+      5-bit poly (AUDC bit 7)
+    </label>
     <label class='yaba'>
       Bit7
       <input type='checkbox' ng-model='audc1[7]' ng-checked='audc1[7]' ng-change='sendRegister("audc1", audc1)' name='audc1[]'>
@@ -52,7 +73,18 @@
     </label>
 
     <label class='audf'>
-      <input type='text' ng-model='audf1' ng-model-options="{updateOn: 'blur'}" ng-change='sendRegister("audf1", audf1)'>AUDF1
+      <input
+        type="range"
+        min="0"                    // default 0
+        max="255"                  // default 100
+        step="1"                   // default 1
+        value="50"                 // default min + (max-min)/2
+        data-orientation="horizontal" // default horizontal
+        ng-model='audf1'
+        ng-change='sendRegister("audf1", audf1)'
+      >
+      <!-- <input type='text' ng-model='audf1' ng-model-options="{updateOn: 'blur'}" ng-change='sendRegister("audf1", audf1)'>AUDF1 -->
+      <span style='font-family:"Arial";font-weight:bold'>{{audf1}}</span>
     </label>
 
     <h3>AUDCTL</h3>
@@ -91,5 +123,20 @@
   </div>
   <script src="/node_modules/angular/angular.js"></script>
   <script src="angularApp.js"></script>
+  <script src="rangeslider.min.js"></script>
+  <script>
+      // Initialize a new plugin instance for all
+      // e.g. $('input[type="range"]') elements.
+      $('input[type="range"]').rangeslider();
+
+      // Destroy all plugin instances created from the
+      // e.g. $('input[type="range"]') elements.
+      $('input[type="range"]').rangeslider('destroy');
+
+      // Update all rangeslider instances for all
+      // e.g. $('input[type="range"]') elements.
+      // Usefull if you changed some attributes e.g. `min` or `max` etc.
+      $('input[type="range"]').rangeslider('update', true);
+  </script>
 </body>
 </html>
